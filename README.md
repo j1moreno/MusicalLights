@@ -1,2 +1,2 @@
 # MusicalLights
-Arduino VU meter, with customizable number of outputs
+Arduino VU meter, with customizable number of outputs.
