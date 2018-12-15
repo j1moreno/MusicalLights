@@ -1,9 +1,9 @@
 #include <Arduino.h>
-#include <VuMeter.cpp>
+#include <MusicalMeter.h>
 
 #define AUDIO_INPUT_PIN A0
 
-VuMeter meter(6, 13);
+MusicalMeter meter(6, 13);
 
 void setup() {
   // put your setup code here, to run once:
