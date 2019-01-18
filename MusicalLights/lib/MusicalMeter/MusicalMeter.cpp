@@ -14,6 +14,7 @@ MusicalMeter::MusicalMeter(int numberOfLevels, int startingPin, int zero_value) 
     led_states_ = new int[number_of_levels_];  // array will hold determined states of leds
     thresh_count_ = number_of_levels_ + 2;
   }
+  average_index_ = 0;
 }
 
 int MusicalMeter::GetNumberOfLevels() {
@@ -94,19 +95,46 @@ void MusicalMeter::DisplayAudioLevel(int audio_level) {
 }
 
 void MusicalMeter::DisplayAudioLevelBasic(int audio_level) {
+  int i;
   if (audio_level == 0) {
-    for (int i = 0; i < number_of_levels_; i++) {
+    for (i = 0; i < number_of_levels_; i++) {
       digitalWrite(led_pins_[i], LOW);
     }
     return;
   }
   int chunk_size = 1023/number_of_levels_;
   int active_levels = audio_level/chunk_size;
-  for (int i = 0; i < active_levels; i++) {
+  for (i = 0; i < active_levels; i++) {
     digitalWrite(led_pins_[i], HIGH);
   }
   // reset lights
-  for (int i = i; i < number_of_levels_; i++) {
-    digitalWrite(led_pins_[i], LOW);
+  for (int j = i; j < number_of_levels_; j++) {
+    digitalWrite(led_pins_[j], LOW);
   }
+}
+
+void MusicalMeter::WriteToBuffer(uint16_t level) {
+  if (average_index_ >= AVERAGE_COUNT_BUFFER_SIZE) {
+    average_index_ = 0;
+  }
+  average_buffer_[average_index_] = level;
+  average_index_++;
+}
+
+uint16_t MusicalMeter::GetBufferAverage() {
+  uint16_t average = 0;
+  for (uint8_t i = 0; i < AVERAGE_COUNT_BUFFER_SIZE; i++) {
+    average += average_buffer_[i];
+    Serial.print(average_buffer_[i]);
+    Serial.print("\t");
+  }
+  Serial.print("\n");
+
+  return average/AVERAGE_COUNT_BUFFER_SIZE;
+}
+
+void MusicalMeter::DisplayAudioLevelAverage(uint16_t audio_level) {
+  WriteToBuffer(audio_level);
+  uint16_t average = GetBufferAverage();
+  DisplayAudioLevelBasic(average);
 }
