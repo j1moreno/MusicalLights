@@ -48,15 +48,10 @@ bool MusicalMeter::ExceedsZeroCount(int audio_level)
 
 void MusicalMeter::RedefineThresholds(int audio_level)
 {
-  Serial.print("New max value! Redefining thresholds \n");
-  Serial.print(audio_level);
-  Serial.print("\n");
   // sensor value is max value, define thresholds accordingly:
   int region_size = (audio_level - ZERO_VALUE)/(number_of_levels_+2);  // 2 extra thresholds
   for(int i=0; i<thresh_count_; i++) {
     thresholds_[i] = region_size * i + ZERO_VALUE;  // account for offset
-    Serial.print(thresholds_[i]);
-    Serial.print("\n");
   }
 }
 
@@ -76,13 +71,10 @@ void MusicalMeter::LedReact(int audio_level){
 }
 
 void MusicalMeter::DisplayAudioLevel(int audio_level) {
-  Serial.print(audio_level);
-  Serial.print("\t");
   // account for "negative values"
   if (audio_level < ZERO_VALUE) {
     audio_level = ZERO_VALUE + (ZERO_VALUE - audio_level);
   }
-  Serial.println(audio_level);
   if (audio_level > current_max_) {
     // if higher max was found, redefine the thresholds
     RedefineThresholds(audio_level);
@@ -125,10 +117,7 @@ uint16_t MusicalMeter::GetBufferAverage() {
   uint16_t average = 0;
   for (uint8_t i = 0; i < AVERAGE_COUNT_BUFFER_SIZE; i++) {
     average += average_buffer_[i];
-    Serial.print(average_buffer_[i]);
-    Serial.print("\t");
   }
-  Serial.print("\n");
 
   return average/AVERAGE_COUNT_BUFFER_SIZE;
 }
