@@ -8,7 +8,6 @@ class MusicalMeter {
         int GetNumberOfLevels();
         void CycleLevels(int delay_between_levels);
         void DisplayAudioLevel(int audio_level);
-        void DisplayAudioLevelBasic(int audio_level);
         void DisplayAudioLevelAverage(uint16_t audio_level);
 
     private:
@@ -28,4 +27,5 @@ class MusicalMeter {
         void RedefineThresholds(int audio_level);
         bool ExceedsZeroCount(int audio_level);
         void LedReact(int audio_level);
+        void DisplayAudioLevelBasic(int audio_level);
 };
