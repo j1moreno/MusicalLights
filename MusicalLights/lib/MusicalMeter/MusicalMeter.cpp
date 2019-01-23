@@ -1,7 +1,8 @@
 #include <Arduino.h>
 #include <MusicalMeter.h>
 
-MusicalMeter::MusicalMeter(int numberOfLevels, int startingPin, int zero_value) {
+MusicalMeter::MusicalMeter(int numberOfLevels, int startingPin) {
+  zero_level_ = 0;  // set to default for now
   number_of_levels_ = numberOfLevels;
   led_pins_ = new int[numberOfLevels];
   // initialize the digital pins as output
@@ -15,6 +16,10 @@ MusicalMeter::MusicalMeter(int numberOfLevels, int startingPin, int zero_value) 
     thresh_count_ = number_of_levels_ + 2;
   }
   average_index_ = 0;
+}
+
+void MusicalMeter::SetZeroLevel(uint16_t zero_level) {
+  zero_level_ = zero_level;
 }
 
 int MusicalMeter::GetNumberOfLevels() {
@@ -31,7 +36,7 @@ void MusicalMeter::CycleLevels(int delay_between_levels) {
 
 bool MusicalMeter::ExceedsZeroCount(int audio_level)
 {
-  if (audio_level == ZERO_VALUE) {
+  if (audio_level == zero_level_) {
     zero_count_++;
   }
   if (zero_count_ < zero_thresh) {
@@ -41,7 +46,7 @@ bool MusicalMeter::ExceedsZeroCount(int audio_level)
   } else {
     // reset counter
     zero_count_ = 0;
-    current_max_ = ZERO_VALUE;
+    current_max_ = zero_level_;
     return true;
   } 
 }
@@ -49,9 +54,9 @@ bool MusicalMeter::ExceedsZeroCount(int audio_level)
 void MusicalMeter::RedefineThresholds(int audio_level)
 {
   // sensor value is max value, define thresholds accordingly:
-  int region_size = (audio_level - ZERO_VALUE)/(number_of_levels_+2);  // 2 extra thresholds
+  int region_size = (audio_level - zero_level_)/(number_of_levels_+2);  // 2 extra thresholds
   for(int i=0; i<thresh_count_; i++) {
-    thresholds_[i] = region_size * i + ZERO_VALUE;  // account for offset
+    thresholds_[i] = region_size * i + zero_level_;  // account for offset
   }
 }
 
@@ -70,10 +75,10 @@ void MusicalMeter::LedReact(int audio_level){
   }
 }
 
-void MusicalMeter::DisplayAudioLevel(int audio_level) {
+void MusicalMeter::DisplayAdaptive(int audio_level) {
   // account for "negative values"
-  if (audio_level < ZERO_VALUE) {
-    audio_level = ZERO_VALUE + (ZERO_VALUE - audio_level);
+  if (audio_level < zero_level_) {
+    audio_level = zero_level_ + (zero_level_ - audio_level);
   }
   if (audio_level > current_max_) {
     // if higher max was found, redefine the thresholds
@@ -122,7 +127,7 @@ uint16_t MusicalMeter::GetBufferAverage() {
   return average/AVERAGE_COUNT_BUFFER_SIZE;
 }
 
-void MusicalMeter::DisplayAudioLevelAverage(uint16_t audio_level) {
+void MusicalMeter::Display(uint16_t audio_level) {
   WriteToBuffer(audio_level);
   uint16_t average = GetBufferAverage();
   DisplayAudioLevelBasic(average);
