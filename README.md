@@ -15,3 +15,6 @@ MusicalMeter meter(6, 13); // 6 levels meter, start from pin 13
 Use the Display() method for basic VU Meter functionality.
 For adaptive VU Meter, use DisplayAdaptive().
 
+## Setup
+
+This code was created using PlatformIO and VS Code; therefore the easiest way to use the code is to open it in a similar environment. The library itself should go in the lib directory, while the main.cpp demo file should go under src directory.
