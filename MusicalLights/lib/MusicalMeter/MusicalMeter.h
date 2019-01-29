@@ -27,5 +27,5 @@ class MusicalMeter {
         void RedefineThresholds(int audio_level);
         bool ExceedsZeroCount(int audio_level);
         void LedReact(int audio_level);
-        void DisplayAudioLevelBasic(int audio_level);
+        void DisplayAudioLevelBasic(int audio_level, uint16_t max_value);
 };

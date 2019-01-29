@@ -3,6 +3,7 @@
 
 MusicalMeter::MusicalMeter(int numberOfLevels, int startingPin) {
   zero_level_ = 0;  // set to default for now
+  current_max_ = 0; // set to zero for now
   number_of_levels_ = numberOfLevels;
   led_pins_ = new int[numberOfLevels];
   // initialize the digital pins as output
@@ -81,17 +82,12 @@ void MusicalMeter::DisplayAdaptive(int audio_level) {
     audio_level = zero_level_ + (zero_level_ - audio_level);
   }
   if (audio_level > current_max_) {
-    // if higher max was found, redefine the thresholds
-    RedefineThresholds(audio_level);
     current_max_ = audio_level;
   }  
-  // account for crossing through zero value on oscillation
-  if (!ExceedsZeroCount(audio_level)) {
-      LedReact(audio_level);
-  }
+  DisplayAudioLevelBasic(audio_level, current_max_);
 }
 
-void MusicalMeter::DisplayAudioLevelBasic(int audio_level) {
+void MusicalMeter::DisplayAudioLevelBasic(int audio_level, uint16_t max_value = 1023) {
   int i;
   if (audio_level == 0) {
     for (i = 0; i < number_of_levels_; i++) {
@@ -99,7 +95,7 @@ void MusicalMeter::DisplayAudioLevelBasic(int audio_level) {
     }
     return;
   }
-  int chunk_size = 1023/number_of_levels_;
+  int chunk_size = max_value/number_of_levels_;
   int active_levels = audio_level/chunk_size;
   for (i = 0; i < active_levels; i++) {
     digitalWrite(led_pins_[i], HIGH);
