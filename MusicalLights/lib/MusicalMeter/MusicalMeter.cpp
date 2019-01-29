@@ -89,7 +89,7 @@ void MusicalMeter::DisplayAdaptive(int audio_level) {
 
 void MusicalMeter::DisplayAudioLevelBasic(int audio_level, uint16_t max_value = 1023) {
   int i;
-  if (audio_level == 0) {
+  if (audio_level == zero_level_) {
     for (i = 0; i < number_of_levels_; i++) {
       digitalWrite(led_pins_[i], LOW);
     }
