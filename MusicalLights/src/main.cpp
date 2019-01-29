@@ -11,7 +11,7 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  uint16_t reading = analogRead(AUDIO_INPUT_PIN) * 20;
+  uint16_t reading = analogRead(AUDIO_INPUT_PIN);
   meter.DisplayAdaptive(reading);
   // meter.Display(reading);
   // meter.CycleLevels(1000);
