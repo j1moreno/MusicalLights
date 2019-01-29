@@ -1,14 +1,14 @@
 #include <Arduino.h>
 #include <MusicalMeter.h>
 
-MusicalMeter::MusicalMeter(int numberOfLevels, int startingPin) {
+MusicalMeter::MusicalMeter(uint8_t numberOfLevels, uint8_t startingPin) {
   zero_level_ = 0;  // set to default for now
   current_max_ = 0; // set to zero for now
   number_of_levels_ = numberOfLevels;
-  led_pins_ = new int[numberOfLevels];
+  led_pins_ = new uint8_t[numberOfLevels];
   // initialize the digital pins as output
-  int pin_index = startingPin;
-  for(int i=0; i<number_of_levels_; i++) {
+  uint8_t pin_index = startingPin;
+  for(uint8_t i=0; i<number_of_levels_; i++) {
     led_pins_[i] = pin_index;
     pinMode(led_pins_[i], OUTPUT);  // configure pin as output
     pin_index--;  // decrease the pin index to go to next pin down
@@ -20,11 +20,11 @@ void MusicalMeter::SetZeroLevel(uint16_t zero_level) {
   zero_level_ = zero_level;
 }
 
-int MusicalMeter::GetNumberOfLevels() {
+uint8_t MusicalMeter::GetNumberOfLevels() {
   return number_of_levels_;
 }
 
-void MusicalMeter::CycleLevels(int delay_between_levels) {
+void MusicalMeter::CycleLevels(uint32_t delay_between_levels) {
   for (int i = 0; i < number_of_levels_; i++) {
     digitalWrite(led_pins_[i], HIGH);
     delay(delay_between_levels);
@@ -32,7 +32,7 @@ void MusicalMeter::CycleLevels(int delay_between_levels) {
   }
 }
 
-void MusicalMeter::DisplayAdaptive(int audio_level) {
+void MusicalMeter::DisplayAdaptive(uint16_t audio_level) {
   // account for "negative values"
   if (audio_level < zero_level_) {
     audio_level = zero_level_ + (zero_level_ - audio_level);
@@ -43,7 +43,7 @@ void MusicalMeter::DisplayAdaptive(int audio_level) {
   DisplayAudioLevelBasic(audio_level, current_max_);
 }
 
-void MusicalMeter::DisplayAudioLevelBasic(int audio_level, uint16_t max_value = 1023) {
+void MusicalMeter::DisplayAudioLevelBasic(uint16_t audio_level, uint16_t max_value = 1023) {
   int i;
   if (audio_level == zero_level_) {
     for (i = 0; i < number_of_levels_; i++) {
