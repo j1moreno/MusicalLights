@@ -12,11 +12,8 @@ MusicalMeter::MusicalMeter(int numberOfLevels, int startingPin) {
     led_pins_[i] = pin_index;
     pinMode(led_pins_[i], OUTPUT);  // configure pin as output
     pin_index--;  // decrease the pin index to go to next pin down
-    thresholds_ = new int[number_of_levels_ + 2];  // 2 extra thresholds, first will be ignored for case when sensor pick up 0, last will be used for last LED threshold
-    led_states_ = new int[number_of_levels_];  // array will hold determined states of leds
-    thresh_count_ = number_of_levels_ + 2;
   }
-  average_index_ = 0;
+  average_index_ = 0; // used for averaging
 }
 
 void MusicalMeter::SetZeroLevel(uint16_t zero_level) {
@@ -32,47 +29,6 @@ void MusicalMeter::CycleLevels(int delay_between_levels) {
     digitalWrite(led_pins_[i], HIGH);
     delay(delay_between_levels);
     digitalWrite(led_pins_[i], LOW);
-  }
-}
-
-bool MusicalMeter::ExceedsZeroCount(int audio_level)
-{
-  if (audio_level == zero_level_) {
-    zero_count_++;
-  }
-  if (zero_count_ < zero_thresh) {
-    return false;
-  } else if (audio_level < thresholds_[1]) {
-    return true;
-  } else {
-    // reset counter
-    zero_count_ = 0;
-    current_max_ = zero_level_;
-    return true;
-  } 
-}
-
-void MusicalMeter::RedefineThresholds(int audio_level)
-{
-  // sensor value is max value, define thresholds accordingly:
-  int region_size = (audio_level - zero_level_)/(number_of_levels_+2);  // 2 extra thresholds
-  for(int i=0; i<thresh_count_; i++) {
-    thresholds_[i] = region_size * i + zero_level_;  // account for offset
-  }
-}
-
-void MusicalMeter::LedReact(int audio_level){
-  // cycle through all thresholds to determine whether LED should be on
-  for(int i=0; i<number_of_levels_; i++) {
-    if(audio_level >= thresholds_[i+1]) {
-      led_states_[i] = HIGH;
-    } else {
-      led_states_[i] = LOW; 
-    }
-  }
-  // now set all leds to their determined state
-  for(int j=0; j<number_of_levels_; j++) {
-    digitalWrite(led_pins_[j], led_states_[j]);
   }
 }
 
