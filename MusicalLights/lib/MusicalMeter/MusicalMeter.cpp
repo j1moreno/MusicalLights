@@ -20,10 +20,6 @@ void MusicalMeter::SetZeroLevel(uint16_t zero_level) {
   zero_level_ = zero_level;
 }
 
-uint8_t MusicalMeter::GetNumberOfLevels() {
-  return number_of_levels_;
-}
-
 void MusicalMeter::CycleLevels(uint32_t delay_between_levels) {
   for (int i = 0; i < number_of_levels_; i++) {
     digitalWrite(led_pins_[i], HIGH);

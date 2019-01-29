@@ -4,7 +4,6 @@ class MusicalMeter {
 
     public:
         MusicalMeter(uint8_t numberOfLevels, uint8_t startingPin);
-        uint8_t GetNumberOfLevels();
         void CycleLevels(uint32_t delay_between_levels);
         void DisplayAdaptive(uint16_t audio_level);
         void Display(uint16_t audio_level);
