@@ -6,6 +6,8 @@ By keeping track of maximum input, it can define thresholds for each light level
 This library allows for custom number of light outputs, up to the physical number of digital pins on Arduino (14 on Uno).
 It can also function as a traditional VU Meter, if desired.
 
+Demo video: https://www.youtube.com/watch?v=37XU9SHiMog
+
 ## Usage
 
 Initialization:
