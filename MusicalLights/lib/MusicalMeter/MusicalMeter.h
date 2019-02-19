@@ -5,7 +5,7 @@
 
 class MusicalMeter {
  public:
-  MusicalMeter(uint8_t numberOfLevels, uint8_t startingPin);
+  MusicalMeter(uint8_t number_of_levels, uint8_t starting_pin);
   void CycleLevels(uint32_t delay_between_levels);
   void DisplayAdaptive(uint16_t audio_level);
   void Display(uint16_t audio_level);

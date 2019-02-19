@@ -1,13 +1,19 @@
 #include <Arduino.h>
 #include <MusicalMeter.h>
 
-MusicalMeter::MusicalMeter(uint8_t numberOfLevels, uint8_t startingPin) {
+// Constructor for MusicalMeter object.
+// Creates an array of size number_of_levels, counting down from starting_pin
+// Example: a 3-level MusicalMeter with starting pin 13 will create an array
+// of size 3, containing 13, 12, and 11 (corresponding to pins).
+// Also initializes some private fields, such as current_max_, which will be
+// updated when the object begins reading signal values.
+MusicalMeter::MusicalMeter(uint8_t number_of_levels, uint8_t starting_pin) {
   zero_level_ = 0;  // set to default for now
   current_max_ = 0; // set to zero for now
-  number_of_levels_ = numberOfLevels;
-  led_pins_ = new uint8_t[numberOfLevels];
+  number_of_levels_ = number_of_levels;
+  led_pins_ = new uint8_t[number_of_levels];
   // initialize the digital pins as output
-  uint8_t pin_index = startingPin;
+  uint8_t pin_index = starting_pin;
   for (uint8_t i=0; i<number_of_levels_; i++) {
     led_pins_[i] = pin_index;
     pinMode(led_pins_[i], OUTPUT);  // configure pin as output
