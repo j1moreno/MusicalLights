@@ -22,10 +22,19 @@ MusicalMeter::MusicalMeter(uint8_t number_of_levels, uint8_t starting_pin) {
   average_index_ = 0; // used for averaging
 }
 
+// Setter for zero_level_ private field.
+// zero_level is used when input signal is DC-biased;
+// Biasing may be desired in order to get a more complete audio signal.
+// Ideally, the biasing point should be at the midpoint of the possible range
+// of analog values Arduino can detect (0-1023) -- so about 512, which turns
+// out to be around 2.5 volts.
 void MusicalMeter::SetZeroLevel(uint16_t zero_level) {
   zero_level_ = zero_level;
 }
 
+// Tester function to display levels activating.
+// Cycles between all defined levels -- does not require input signal.
+// Delay is in milliseconds.
 void MusicalMeter::CycleLevels(uint32_t delay_between_levels) {
   for (int i = 0; i < number_of_levels_; i++) {
     digitalWrite(led_pins_[i], HIGH);
@@ -34,6 +43,9 @@ void MusicalMeter::CycleLevels(uint32_t delay_between_levels) {
   }
 }
 
+// Main function for adaptive display of signal level.
+// Corrects reading in case of biasing, then defines max_value if larger than
+// current. Finally, passes to DisplayAudioLevelBasic to display level.
 void MusicalMeter::DisplayAdaptive(uint16_t audio_level) {
   // account for "negative values"
   if (audio_level < zero_level_) {
@@ -45,6 +57,9 @@ void MusicalMeter::DisplayAdaptive(uint16_t audio_level) {
   DisplayAudioLevelBasic(audio_level, current_max_);
 }
 
+// Activates pins based on input signal level and current maximum value.
+// Default maximum is upper limit of Arduino reading.
+// Any remaining pins are deactivated.
 void MusicalMeter::DisplayAudioLevelBasic(uint16_t audio_level, 
                                           uint16_t max_value = 1023) {
   int i;
@@ -65,6 +80,7 @@ void MusicalMeter::DisplayAudioLevelBasic(uint16_t audio_level,
   }
 }
 
+// Writes values to internal buffer for later average calculations.
 void MusicalMeter::WriteToBuffer(uint16_t level) {
   if (average_index_ >= AVERAGE_COUNT_BUFFER_SIZE) {
     average_index_ = 0;
@@ -73,6 +89,7 @@ void MusicalMeter::WriteToBuffer(uint16_t level) {
   average_index_++;
 }
 
+// Reads values in internal buffer and returns average value.
 uint16_t MusicalMeter::GetBufferAverage() {
   uint16_t average = 0;
   for (uint8_t i = 0; i < AVERAGE_COUNT_BUFFER_SIZE; i++) {
@@ -82,6 +99,10 @@ uint16_t MusicalMeter::GetBufferAverage() {
   return average/AVERAGE_COUNT_BUFFER_SIZE;
 }
 
+// Basic VU meter functionality.
+// Does not adapt to lower levels; determines ouput based on default
+// maximum (1023). Performs averaging on output, in order to get a
+// smoother output.
 void MusicalMeter::Display(uint16_t audio_level) {
   WriteToBuffer(audio_level);
   uint16_t average = GetBufferAverage();
